@@ -1,47 +1,7 @@
 import os
 
-import requests
-import hide
-# from hide.client.hide_client import HideClient
-# from langchain import hub
-# from langchain.agents import AgentExecutor, create_tool_calling_agent
-# from langchain_openai import ChatOpenAI
-# from langchain import hub
-# from langchain.agents import AgentExecutor, create_tool_calling_agent
-# from langchain_openai import ChatOpenAI
-# from hide.toolkit import Toolkit
-from hide.toolkit import Toolkit
-from typing import Optional
 from hide import model
-from hide.devcontainer.model import DevContainer
-from hide.client.hide_client import HideClientError
-
-def create_project(
-        self,
-        repository: model.Repository,
-        devcontainer: Optional[DevContainer] = None,
-        languages: Optional[list[model.Language]] = None,
-    ) -> model.Project:
-        request = model.CreateProjectRequest(
-            repository=repository, devcontainer=devcontainer, languages=languages
-        )
-        print("request", request)
-        response = requests.post(
-            f"{self.base_url}/projects",
-            json=request.model_dump(exclude_unset=True, exclude_none=True),
-        )
-        print("response", response)
-        if not response.ok:
-            raise HideClientError(response.text)
-        
-        # Ensure the response includes the repository
-        response_data = response.json()
-        if 'repository' not in response_data:
-            response_data['repository'] = repository  # Add the repository to the response
-
-        print("validate response", response_data)
-        return model.Project.model_validate(response_data)
-
+from hide_overrides.hide_client import HideClient
 
 OPENAI_API_KEY = ""
 HIDE_BASE_URL = "http://localhost:8080"
@@ -50,7 +10,7 @@ PROJECT_GIT_URL = "https://github.com/hide-org/math-api.git"
 if "OPENAI_API_KEY" not in os.environ:
     os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
-hc = hide.Client(base_url=HIDE_BASE_URL)
+hc = HideClient(base_url=HIDE_BASE_URL)
 project = hc.create_project(
     repository=model.Repository(url=PROJECT_GIT_URL),
 )

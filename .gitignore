@@ -1,2 +1,6 @@
 .venv
 .mypy_cache
+.env
+
+# all __pycache__ directories
+**/__pycache__
